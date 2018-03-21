@@ -9,6 +9,12 @@ run: build
 agent: build
 	./build/$(NAME) -d agent
 
+github: build
+	./build/$(NAME) -d github
+
+godoc: build
+	./build/$(NAME) -d godoc
+
 test: vet
 	go test -v -short ./...
 
