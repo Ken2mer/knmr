@@ -25,28 +25,44 @@ func githubCmd(c *cli.Context) error {
 	ctx := context.Background()
 	client := oauth2Client(ctx)
 
-	user, err := getUser(ctx, client)
-	if err != nil {
-		return err
-	}
-	follows, err := getFollowingUsers(ctx, client)
-	if err != nil {
-		return err
-	}
-	code, err := getCodeSearchResult(ctx, client)
-	if err != nil {
-		return err
-	}
+	err :=  events(ctx, client)
+
+	return err
+}
+
+func events(ctx context.Context, client *github.Client) error {
 	events, err := getEvents(ctx, client)
 	if err != nil {
 		return err
 	}
-
-	dumpUser(user)
-	dumpFollowUsers(follows)
-	dumpCodeSearchResult(code)
 	dumpEvents(events)
+	return nil
+}
 
+func code(ctx context.Context, client *github.Client) error {
+	code, err := getCodeSearchResult(ctx, client)
+	if err != nil {
+		return err
+	}
+	dumpCodeSearchResult(code)
+	return nil
+}
+
+func follows(ctx context.Context, client *github.Client) error {
+	follows, err := getFollowingUsers(ctx, client)
+	if err != nil {
+		return err
+	}
+	dumpFollowUsers(follows)
+	return nil
+}
+
+func user(ctx context.Context, client *github.Client) error {
+	user, err := getUser(ctx, client)
+	if err != nil {
+		return err
+	}
+	dumpUser(user)
 	return nil
 }
 

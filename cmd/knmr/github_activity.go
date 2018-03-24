@@ -19,8 +19,8 @@ func getEvents(ctx context.Context, client *github.Client) ([]*github.Event, err
 }
 
 func dumpEvents(events []*github.Event) {
-	// for i, event := range events {
-	// 	logger.Debugf("%d\n", i)
-	// 	fmt.Printf("%s\n\n", event.GetRawPayload())
-	// }
+	for i, event := range events {
+		logger.Debugf("%d\n", i)
+		fmt.Printf("%s\n\n", event.GetRawPayload())
+	}
 }

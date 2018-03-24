@@ -15,6 +15,9 @@ github: build
 godoc: build
 	./build/$(NAME) -d godoc
 
+twitter: build
+	./build/$(NAME) -d twitter
+
 test: vet
 	go test -v -short ./...
 

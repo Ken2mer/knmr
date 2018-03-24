@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/Ken2mer/knmr/logger"
@@ -26,7 +25,7 @@ func main() {
 	app.Before = before
 
 	if err := app.Run(os.Args); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		logger.Errorf("error: %v\n", err)
 		os.Exit(1)
 	}
 }
