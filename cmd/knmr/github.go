@@ -25,7 +25,7 @@ func githubCmd(c *cli.Context) error {
 	ctx := context.Background()
 	client := oauth2Client(ctx)
 
-	err :=  events(ctx, client)
+	err := events(ctx, client)
 
 	return err
 }

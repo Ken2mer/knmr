@@ -1,12 +1,25 @@
 package logger
 
-import "log"
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+)
 
 // Verbose sets log level. If false: INFO(default), if true: DEBUG.
 var Verbose = false
 
 func init() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds)
+}
+
+// DumpJSON prints with double space
+func DumpJSON(v interface{}) (n int, err error) {
+	data, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		return 0, err
+	}
+	return fmt.Printf("%s\n\n", data)
 }
 
 // Debug println
