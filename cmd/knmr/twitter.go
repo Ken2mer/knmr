@@ -9,6 +9,12 @@ import (
 )
 
 var (
+	// // set Authentication info
+	// consumer_key        string = "XXXXXX"
+	// consumer_secret     string = "XXXXXX"
+	// access_token        string = "XXXXXX"
+	// access_token_secret string = "XXXXXX"
+
 	placeID         int64  = 1118550    // Yokohama
 	slug            string = "engineer" // for GetListTweetsBySlug()
 	ownerScreenName string = "Ken2mer"  // for GetListTweetsBySlug()
@@ -25,8 +31,16 @@ func twitterCmd(c *cli.Context) error {
 	anaconda.SetConsumerKey(consumer_key)
 	anaconda.SetConsumerSecret(consumer_secret)
 	api := anaconda.NewTwitterApi(access_token, access_token_secret)
-	dumpListTweets(api)
+	dumpTrendResp(api)
 	return nil
+}
+
+func dumpActivity(api *anaconda.TwitterApi) {
+	url, err := api.GetActivityWebhooks(nil)
+	if err != nil {
+		fmt.Printf("error: %s", err)
+	}
+	logger.DumpJSON(url)
 }
 
 func dumpTrendResp(api *anaconda.TwitterApi) {
@@ -92,12 +106,8 @@ func dumpSearchResult(api *anaconda.TwitterApi) {
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
-	for {
+	for searchResponse.Statuses != nil {
 		logger.DumpJSON(searchResponse)
-
 		searchResponse, err = searchResponse.GetNext(api)
-		if searchResponse.Statuses == nil {
-			break
-		}
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Ken2mer/knmr/logger"
 	"github.com/google/go-github/github"
 	"github.com/tcnksm/go-gitconfig"
 	"github.com/urfave/cli"
@@ -12,7 +13,8 @@ import (
 )
 
 var (
-	username = "Ken2mer"
+	username string = "Ken2mer"
+	reponame string = "knmr"
 )
 
 var githubCommand = cli.Command{
@@ -25,9 +27,29 @@ func githubCmd(c *cli.Context) error {
 	ctx := context.Background()
 	client := oauth2Client(ctx)
 
-	err := events(ctx, client)
+	serve()
+	// return subscription(ctx, client)
+	// return events(ctx, client)
+	return code(ctx, client)
+	// return follows(ctx, client)
+	// return user(ctx, client)
+}
 
-	return err
+func serve() {
+	s := gitHubEventMonitor{
+		webhookSecretKey: []byte(getGithubToken()),
+	}
+	http.HandleFunc("/", s.serveHTTP)
+	logger.Error(http.ListenAndServe(":12345", nil))
+}
+
+func subscription(ctx context.Context, client *github.Client) error {
+	subscription, err := getRepositorySubscription(ctx, client)
+	if err != nil {
+		return err
+	}
+	logger.DumpJSON(subscription)
+	return nil
 }
 
 func events(ctx context.Context, client *github.Client) error {
@@ -44,7 +66,7 @@ func code(ctx context.Context, client *github.Client) error {
 	if err != nil {
 		return err
 	}
-	dumpCodeSearchResult(code)
+	logger.DumpJSON(code)
 	return nil
 }
 

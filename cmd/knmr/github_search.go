@@ -11,7 +11,6 @@ import (
 func getCodeSearchResult(ctx context.Context, client *github.Client) (*github.CodeSearchResult, error) {
 	result, _, err := client.Search.Code(ctx, username, nil)
 	if err != nil {
-		fmt.Printf("\nerror: %v\n", err)
 		return nil, err
 	}
 	return result, err

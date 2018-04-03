@@ -9,6 +9,7 @@ var commands = []cli.Command{
 	agentCommand,
 	githubCommand,
 	godocCommand,
+	linebotCommand,
 	twitterCommand,
 }
 
