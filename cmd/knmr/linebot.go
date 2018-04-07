@@ -5,13 +5,17 @@ import (
 	"github.com/urfave/cli"
 )
 
+type lbClient struct {
+	bot *linebot.Client
+}
+
 var linebotCommand = cli.Command{
 	Name:   "linebot",
 	Usage:  "linebot",
 	Action: linebotCmd,
 }
 
-func linebotCmd(c *cli.Context) error {
+func linebotCmd(ctx *cli.Context) error {
 	// Authentication info
 	// var channelSecret string = "XXXXXX"
 	// var channelToken  string = "XXXXXX"
@@ -20,11 +24,14 @@ func linebotCmd(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return pushMessage(bot)
+
+	c := lbClient{bot: bot}
+	return c.pushMessage()
 }
 
 // cf. https://github.com/line/line-bot-sdk-go#create-message
-func pushMessage(bot *linebot.Client) error {
+func (c *lbClient) pushMessage() error {
+	var bot *linebot.Client = c.bot
 	var messages []linebot.Message
 
 	leftBtn := linebot.NewMessageTemplateAction("left", "left clicked")

@@ -9,17 +9,15 @@ import (
 )
 
 var (
-	// // set Authentication info
-	// consumer_key        string = "XXXXXX"
-	// consumer_secret     string = "XXXXXX"
-	// access_token        string = "XXXXXX"
-	// access_token_secret string = "XXXXXX"
-
 	placeID         int64  = 1118550    // Yokohama
 	slug            string = "engineer" // for GetListTweetsBySlug()
 	ownerScreenName string = "Ken2mer"  // for GetListTweetsBySlug()
 	queryString     string = "lang:ja"  // for GetSearch()
 )
+
+type twClient struct {
+	api *anaconda.TwitterApi
+}
 
 var twitterCommand = cli.Command{
 	Name:   "twitter",
@@ -27,48 +25,54 @@ var twitterCommand = cli.Command{
 	Action: twitterCmd,
 }
 
-func twitterCmd(c *cli.Context) error {
+func twitterCmd(ctx *cli.Context) error {
+	// consumer_key        string = "XXXXXX"
+	// consumer_secret     string = "XXXXXX"
+	// access_token        string = "XXXXXX"
+	// access_token_secret string = "XXXXXX"
 	anaconda.SetConsumerKey(consumer_key)
 	anaconda.SetConsumerSecret(consumer_secret)
 	api := anaconda.NewTwitterApi(access_token, access_token_secret)
-	dumpTrendResp(api)
+
+	c := twClient{api: api}
+	c.dumpTrendResp()
 	return nil
 }
 
-func dumpActivity(api *anaconda.TwitterApi) {
-	url, err := api.GetActivityWebhooks(nil)
+func (c *twClient) dumpActivity() {
+	url, err := c.api.GetActivityWebhooks(nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
 	logger.DumpJSON(url)
 }
 
-func dumpTrendResp(api *anaconda.TwitterApi) {
-	trendResp, err := api.GetTrendsByPlace(placeID, nil)
+func (c *twClient) dumpTrendResp() {
+	trendResp, err := c.api.GetTrendsByPlace(placeID, nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
 	logger.DumpJSON(trendResp)
 }
 
-func dumpListTweets(api *anaconda.TwitterApi) {
-	tweets, err := api.GetListTweetsBySlug(slug, ownerScreenName, true, nil)
+func (c *twClient) dumpListTweets() {
+	tweets, err := c.api.GetListTweetsBySlug(slug, ownerScreenName, true, nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
 	logger.DumpJSON(tweets)
 }
 
-func dmupTimeline(api *anaconda.TwitterApi) {
-	timeline, err := api.GetHomeTimeline(nil)
+func (c *twClient) dmupTimeline() {
+	timeline, err := c.api.GetHomeTimeline(nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
 	logger.DumpJSON(timeline)
 }
 
-func dumpFriends(api *anaconda.TwitterApi) {
-	cursor, err := api.GetFriendsList(nil)
+func (c *twClient) dumpFriends() {
+	cursor, err := c.api.GetFriendsList(nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
@@ -78,8 +82,8 @@ func dumpFriends(api *anaconda.TwitterApi) {
 	}
 }
 
-func dumpFollowers(api *anaconda.TwitterApi) {
-	cursor, err := api.GetFollowersList(nil)
+func (c *twClient) dumpFollowers() {
+	cursor, err := c.api.GetFollowersList(nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
@@ -89,8 +93,8 @@ func dumpFollowers(api *anaconda.TwitterApi) {
 	}
 }
 
-func dumpFavorites(api *anaconda.TwitterApi) {
-	favorites, err := api.GetFavorites(nil)
+func (c *twClient) dumpFavorites() {
+	favorites, err := c.api.GetFavorites(nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}
@@ -101,8 +105,9 @@ func dumpFavorites(api *anaconda.TwitterApi) {
 	}
 }
 
-func dumpSearchResult(api *anaconda.TwitterApi) {
-	searchResponse, err := api.GetSearch(queryString, nil)
+func (c *twClient) dumpSearchResult() {
+	var api *anaconda.TwitterApi = c.api
+	searchResponse, err := c.api.GetSearch(queryString, nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
 	}

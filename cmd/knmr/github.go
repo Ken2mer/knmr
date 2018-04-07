@@ -17,34 +17,41 @@ var (
 	reponame string = "knmr"
 )
 
+type ghClient struct {
+	ctx context.Context
+	client *github.Client
+}
+
 var githubCommand = cli.Command{
 	Name:   "github",
 	Usage:  "github",
 	Action: githubCmd,
 }
 
-func githubCmd(c *cli.Context) error {
-	ctx := context.Background()
-	client := oauth2Client(ctx)
+func githubCmd(ctx *cli.Context) error {
+	context := context.Background()
+	client := oauth2Client(context)
+
+	c := ghClient{ctx: context, client: client}
 
 	serve()
-	// return subscription(ctx, client)
-	// return events(ctx, client)
-	return code(ctx, client)
-	// return follows(ctx, client)
-	// return user(ctx, client)
+	// return c.subscription()
+	// return c.events()
+	return c.code()
+	// return c.follows()
+	// return c.user()
 }
 
 func serve() {
 	s := gitHubEventMonitor{
 		webhookSecretKey: []byte(getGithubToken()),
 	}
-	http.HandleFunc("/", s.serveHTTP)
+	http.HandleFunc("/payload", s.serveHTTP)
 	logger.Error(http.ListenAndServe(":12345", nil))
 }
 
-func subscription(ctx context.Context, client *github.Client) error {
-	subscription, err := getRepositorySubscription(ctx, client)
+func (c *ghClient) subscription() error {
+	subscription, err := getRepositorySubscription(c.ctx, c.client)
 	if err != nil {
 		return err
 	}
@@ -52,8 +59,8 @@ func subscription(ctx context.Context, client *github.Client) error {
 	return nil
 }
 
-func events(ctx context.Context, client *github.Client) error {
-	events, err := getEvents(ctx, client)
+func (c *ghClient) events() error {
+	events, err := getEvents(c.ctx, c.client)
 	if err != nil {
 		return err
 	}
@@ -61,8 +68,8 @@ func events(ctx context.Context, client *github.Client) error {
 	return nil
 }
 
-func code(ctx context.Context, client *github.Client) error {
-	code, err := getCodeSearchResult(ctx, client)
+func (c *ghClient) code() error {
+	code, err := getCodeSearchResult(c.ctx, c.client)
 	if err != nil {
 		return err
 	}
@@ -70,8 +77,8 @@ func code(ctx context.Context, client *github.Client) error {
 	return nil
 }
 
-func follows(ctx context.Context, client *github.Client) error {
-	follows, err := getFollowingUsers(ctx, client)
+func (c *ghClient) follows() error {
+	follows, err := getFollowingUsers(c.ctx, c.client)
 	if err != nil {
 		return err
 	}
@@ -79,8 +86,8 @@ func follows(ctx context.Context, client *github.Client) error {
 	return nil
 }
 
-func user(ctx context.Context, client *github.Client) error {
-	user, err := getUser(ctx, client)
+func (c *ghClient) user() error {
+	user, err := getUser(c.ctx, c.client)
 	if err != nil {
 		return err
 	}
