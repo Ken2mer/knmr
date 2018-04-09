@@ -1,12 +1,12 @@
 NAME=knmr
 
-build: 
+build: test
 	go build -o build/$(NAME) ./cmd/$(NAME)
 
 run: build
 	./build/$(NAME) -d
 
-agent: test build
+agent: build
 	./build/$(NAME) -d agent
 
 github: build
