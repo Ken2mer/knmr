@@ -26,6 +26,12 @@ var twitterCommand = cli.Command{
 }
 
 func twitterCmd(ctx *cli.Context) error {
+	c := newTwitterClient()
+	c.dumpTrendResp()
+	return nil
+}
+
+func newTwitterClient() twClient {
 	// consumer_key        string = "XXXXXX"
 	// consumer_secret     string = "XXXXXX"
 	// access_token        string = "XXXXXX"
@@ -33,10 +39,7 @@ func twitterCmd(ctx *cli.Context) error {
 	anaconda.SetConsumerKey(consumer_key)
 	anaconda.SetConsumerSecret(consumer_secret)
 	api := anaconda.NewTwitterApi(access_token, access_token_secret)
-
-	c := twClient{api: api}
-	c.dumpTrendResp()
-	return nil
+	return twClient{api: api}
 }
 
 func (c *twClient) dumpActivity() {

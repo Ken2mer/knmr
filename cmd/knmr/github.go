@@ -29,25 +29,24 @@ var githubCommand = cli.Command{
 }
 
 func githubCmd(ctx *cli.Context) error {
-	context := context.Background()
-	client := oauth2Client(context)
-
-	c := ghClient{ctx: context, client: client}
-
-	serve()
-	// return c.subscription()
-	// return c.events()
-	return c.code()
-	// return c.follows()
-	// return c.user()
+	return serve()
 }
 
-func serve() {
+func serve() error {
+	// var webhookSecretKey string = "XXX"
 	s := gitHubEventMonitor{
-		webhookSecretKey: []byte(getGithubToken()),
+		webhookSecretKey: []byte(webhookSecretKey),
 	}
 	http.HandleFunc("/payload", s.serveHTTP)
-	logger.Error(http.ListenAndServe(":12345", nil))
+	return http.ListenAndServe(":12345", nil)
+}
+
+func newGithubClient() ghClient {
+	context := context.Background()
+	return ghClient{
+		ctx: context, 
+		client: oauth2Client(context),
+	} 
 }
 
 func (c *ghClient) subscription() error {

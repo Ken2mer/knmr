@@ -16,17 +16,21 @@ var linebotCommand = cli.Command{
 }
 
 func linebotCmd(ctx *cli.Context) error {
-	// Authentication info
-	// var channelSecret string = "XXXXXX"
-	// var channelToken  string = "XXXXXX"
-
-	bot, err := linebot.New(channelSecret, channelToken)
+	c, err := newLinebotClient()
 	if err != nil {
 		return err
 	}
-
-	c := lbClient{bot: bot}
 	return c.pushMessage()
+}
+
+func newLinebotClient() (lbClient, error) {
+	// var channelSecret string = "XXXXXX"
+	// var channelToken  string = "XXXXXX"
+	bot, err := linebot.New(channelSecret, channelToken)
+	if err != nil {
+		return lbClient{}, err
+	}
+	return lbClient{bot: bot}, nil
 }
 
 // cf. https://github.com/line/line-bot-sdk-go#create-message
