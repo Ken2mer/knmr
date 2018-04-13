@@ -1,7 +1,8 @@
 NAME=knmr
+CURRENT_REVISION = $(shell git rev-parse --short HEAD)
 
 build: test
-	go build -o build/$(NAME) ./cmd/$(NAME)
+	go build -ldflags "-X main.gitcommit=$(CURRENT_REVISION)" -o build/$(NAME) ./cmd/$(NAME)
 
 run: build
 	./build/$(NAME) -d

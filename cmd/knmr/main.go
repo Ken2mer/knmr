@@ -7,13 +7,14 @@ import (
 	"github.com/urfave/cli"
 )
 
-const (
-	name    = "knmr"
-	version = "0.0.0"
+var (
+	name string   = "knmr"
+	version string = "0.0.0"
+	gitcommit string
 )
 
 func main() {
-	logger.Infof("%s version: %s\n", name, version)
+	logger.Infof("%s version: %s-%s\n", name, version, gitcommit)
 
 	app := cli.NewApp()
 	app.Name = name
