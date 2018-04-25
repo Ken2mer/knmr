@@ -18,7 +18,7 @@ var agentCommand = cli.Command{
 
 var maxTerminatingInterval = 10 * time.Second
 
-func signalHandler(c chan os.Signal, termCh chan struct{}) {
+func signalHandler(c chan os.Signal, termCh chan<- struct{}) {
 	received := false
 	for sig := range c {
 		if sig == syscall.SIGHUP {
@@ -50,7 +50,7 @@ const (
 	loopStateTerminating
 )
 
-func loop(termCh chan struct{}) error {
+func loop(termCh <-chan struct{}) error {
 	lState := loopStateFirst
 
 	for {
