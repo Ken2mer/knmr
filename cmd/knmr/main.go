@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	name string   = "knmr"
-	version string = "0.0.0"
+	name      string = "knmr"
+	version   string = "0.0.0"
 	gitcommit string
 )
 
