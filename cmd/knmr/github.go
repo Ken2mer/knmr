@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/Ken2mer/knmr/logger"
 	"github.com/google/go-github/github"
@@ -17,11 +18,6 @@ var (
 	reponame string = "knmr"
 )
 
-type ghClient struct {
-	ctx context.Context
-	client *github.Client
-}
-
 var githubCommand = cli.Command{
 	Name:   "github",
 	Usage:  "github",
@@ -29,69 +25,74 @@ var githubCommand = cli.Command{
 }
 
 func githubCmd(ctx *cli.Context) error {
+	gh := newGithubClient()
+	fns := []func(){
+		gh.user,
+		gh.code,
+	}
+	var wg sync.WaitGroup
+	for _, fn := range fns {
+		wg.Add(1)
+		go func(f func()) {
+			f()
+			wg.Done()
+		}(fn)
+	}
+	wg.Wait()
 	return serve()
 }
 
-func serve() error {
-	// var webhookSecretKey string = "XXX"
-	s := gitHubEventMonitor{
-		webhookSecretKey: []byte(webhookSecretKey),
-	}
-	http.HandleFunc("/payload", s.serveHTTP)
-	return http.ListenAndServe(":12345", nil)
+type ghClient struct {
+	ctx    context.Context
+	client *github.Client
 }
 
 func newGithubClient() ghClient {
 	context := context.Background()
 	return ghClient{
-		ctx: context, 
+		ctx:    context,
 		client: oauth2Client(context),
-	} 
+	}
 }
 
-func (c *ghClient) subscription() error {
+func (c *ghClient) subscription() {
 	subscription, err := getRepositorySubscription(c.ctx, c.client)
 	if err != nil {
-		return err
+		return
 	}
 	logger.DumpJSON(subscription)
-	return nil
 }
 
-func (c *ghClient) events() error {
+func (c *ghClient) events() {
 	events, err := getEvents(c.ctx, c.client)
 	if err != nil {
-		return err
+		return
 	}
 	dumpEvents(events)
-	return nil
 }
 
-func (c *ghClient) code() error {
+func (c *ghClient) code() {
 	code, err := getCodeSearchResult(c.ctx, c.client)
 	if err != nil {
-		return err
+		return
 	}
-	logger.DumpJSON(code)
-	return nil
+	logger.DumpJSON(code.GetTotal())
 }
 
-func (c *ghClient) follows() error {
+func (c *ghClient) follows() {
 	follows, err := getFollowingUsers(c.ctx, c.client)
 	if err != nil {
-		return err
+		return
 	}
 	dumpFollowUsers(follows)
-	return nil
 }
 
-func (c *ghClient) user() error {
+func (c *ghClient) user() {
 	user, err := getUser(c.ctx, c.client)
 	if err != nil {
-		return err
+		return
 	}
 	dumpUser(user)
-	return nil
 }
 
 // cf. https://github.com/mackerelio/mkr/blob/af4f89ae6fac2290b9fe642de37f84a25de67d62/plugin/github.go

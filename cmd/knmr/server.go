@@ -27,3 +27,12 @@ func (s *gitHubEventMonitor) serveHTTP(w http.ResponseWriter, r *http.Request) {
 		logger.Debugf("create: %s\n", event)
 	}
 }
+
+func serve() error {
+	// var webhookSecretKey string = "XXX"
+	s := gitHubEventMonitor{
+		webhookSecretKey: []byte(webhookSecretKey),
+	}
+	http.HandleFunc("/payload", s.serveHTTP)
+	return http.ListenAndServe(":12345", nil)
+}
