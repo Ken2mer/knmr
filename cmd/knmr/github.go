@@ -28,7 +28,10 @@ func githubCmd(ctx *cli.Context) error {
 	gh := newGithubClient()
 	fns := []func(){
 		gh.user,
+		gh.follows,
 		gh.code,
+		gh.events,
+		gh.subscription,
 	}
 	var wg sync.WaitGroup
 	for _, fn := range fns {
@@ -39,7 +42,7 @@ func githubCmd(ctx *cli.Context) error {
 		}(fn)
 	}
 	wg.Wait()
-	return serve()
+	return ghServe()
 }
 
 type ghClient struct {
@@ -76,7 +79,7 @@ func (c *ghClient) code() {
 	if err != nil {
 		return
 	}
-	logger.DumpJSON(code.GetTotal())
+	dumpCodeSearchResult(code)
 }
 
 func (c *ghClient) follows() {

@@ -28,7 +28,7 @@ func (s *gitHubEventMonitor) serveHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func serve() error {
+func ghServe() error {
 	// var webhookSecretKey string = "XXX"
 	s := gitHubEventMonitor{
 		webhookSecretKey: []byte(webhookSecretKey),
