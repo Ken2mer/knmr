@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	username string = "Ken2mer"
-	reponame string = "knmr"
+	username = "Ken2mer"
+	reponame = "knmr"
 )
 
 var githubCommand = cli.Command{

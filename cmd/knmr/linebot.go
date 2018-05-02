@@ -35,7 +35,6 @@ func newLinebotClient() (lbClient, error) {
 
 // cf. https://github.com/line/line-bot-sdk-go#create-message
 func (c *lbClient) pushMessage() error {
-	var bot *linebot.Client = c.bot
 	var messages []linebot.Message
 
 	leftBtn := linebot.NewMessageTemplateAction("left", "left clicked")
@@ -46,6 +45,7 @@ func (c *lbClient) pushMessage() error {
 	messages = append(messages, message)
 
 	// var userID string = "XXXXXX"
+	bot := c.bot
 	_, err := bot.PushMessage(userID, messages...).Do()
 	if err != nil {
 		return err

@@ -10,9 +10,9 @@ import (
 
 var (
 	placeID         int64  = 1118550    // Yokohama
-	slug            string = "engineer" // for GetListTweetsBySlug()
-	ownerScreenName string = "Ken2mer"  // for GetListTweetsBySlug()
-	queryString     string = "lang:ja"  // for GetSearch()
+	slug            = "engineer" // for GetListTweetsBySlug()
+	ownerScreenName = "Ken2mer"  // for GetListTweetsBySlug()
+	queryString     = "lang:ja"  // for GetSearch()
 )
 
 type twClient struct {
@@ -109,7 +109,7 @@ func (c *twClient) dumpFavorites() {
 }
 
 func (c *twClient) dumpSearchResult() {
-	var api *anaconda.TwitterApi = c.api
+	api := c.api
 	searchResponse, err := c.api.GetSearch(queryString, nil)
 	if err != nil {
 		fmt.Printf("error: %s", err)
