@@ -16,8 +16,6 @@ var (
 func main() {
 	logger.Infof("%s version: %s-%s\n", name, version, gitcommit)
 
-	serve()
-
 	app := cli.NewApp()
 	app.Name = name
 	app.Version = version
